@@ -4,7 +4,21 @@ Accessing the updated Cal-Access implementation.
 The new Cal-Access system is due to become live in February of 2021. This project contains
 tests to confirm the accessibility and correctness of the API.
 
-== Running ==
+## Running ##
+
+You need a property file:
+
+```
+% cat ~/.calaccess_api.txt
+
+vendorEmail: TBD
+client_id: TBD
+client_secret: TBD
+vendorCode: TBD
+% 
+```
+These will be added as headers to the requests.
+
 
 ```
 % ant     

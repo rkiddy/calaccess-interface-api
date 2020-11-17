@@ -1,0 +1,1774 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema version="1.0.0" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+	<xs:include schemaLocation="commonTypes.xsd"/>	
+	<xs:complexType name="form460Type">
+		<xs:sequence>
+			<xs:element name="Header" type="headerType" minOccurs="1" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						This section is used to validate that the uploaded file conforms to the expected format, was created by certified software, and is being uploaded to the correct filer.
+					</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Section0" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="StatementCoversPeriodFrom" type="xs:date" minOccurs="1" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									Start of reporting period.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="StatementCoversPeriodThrough" type="xs:date" minOccurs="1" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									End of reporting period.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="DateOfElection" type="xs:date" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									Date of the election, if relevant.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Section2" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="TypeOfStatement" type="statementTypeEnumeration" minOccurs="1" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									Must be one of the following values:
+									Preelection
+									Semi-annual
+									Quarterly
+									SpecialOdd-Year
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="TerminationStatement" type="xs:boolean" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									Set to True if this is a terminationn report. A Termination 410 must also nbe filed.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Amendment" type="xs:boolean" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									Set to True if this is an amended version of a previously filed report. If true, the report cover period
+									must match the previously filed report and an explanation must be provided.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="AmendmentExplanation" type="xs:string" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									Provide an explanation of why the report is being amended.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Section3" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Candidate" type="individualType" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="Committee" type="committeeType" minOccurs="0" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="Section4" type="verificationType" minOccurs="1" maxOccurs="4"/>
+			<xs:element name="RelatedCommittees" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Name" minOccurs="0" maxOccurs="1">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="300"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="ControlledCommitte" type="xs:boolean" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="Address" type="addressType" minOccurs="0" maxOccurs="1"/>
+						<xs:choice>
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									if the committee does not yet have an id value, provide the treasurer's contact information
+								</xs:documentation>
+							</xs:annotation>
+							<xs:element name="CommitteeId" minOccurs="0" maxOccurs="1">
+								<xs:simpleType>
+									<xs:restriction base="xs:string">
+										<xs:maxLength value="20"/>
+									</xs:restriction>
+								</xs:simpleType>
+							</xs:element>
+							<xs:element name="Treasurer" type="treasurerType" minOccurs="0" maxOccurs="1"/>
+						</xs:choice>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="SummaryPage" minOccurs="1" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ColumnA"  minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									Totals for the current reporting period.
+									Developer note: All fields of the summary page that are calculated by adding
+									or subtracting other values are excluded. (We might take some heat for this
+									suggestion, BUT there really is no room for interpretation about which values
+									are added to create the final summaary page values...)
+									Other developer note: omitting minOccurs/maxOccurs values means
+									'one-and-only-one'
+									by default in XSD, which I didn't know without dusting off my old XML schema
+									documentation...
+								</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+									<xs:annotation>
+										<xs:documentation xml:lang="en">
+											Summary information for the report.
+										</xs:documentation>
+									</xs:annotation>
+									<xs:sequence>
+										<xs:element name="MonetaryContributions" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="LoansReceived" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="SubtotalCashContributions" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="NonmonetaryContributions" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="TotalContributionsReceived" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="PaymentsMade" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="LoansMade" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="SubtotalCashPayments" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="AccruedExpenses" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="NonmonetaryAdjustment" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="TotalExpendituresMade" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="BeginningCashBalance" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="CashReceipts" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="MiscellaneousIncreasestoCash" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="CashPayments" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="EndingCashBalance" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="LoanGuaranteesReceived" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="CashEquivalent" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="OutstandingDebts" type="xs:decimal" minOccurs="0" maxOccurs="1"/>										
+									</xs:sequence>
+								</xs:complexType>
+						</xs:element>
+						<xs:element name="ColumnB"  minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									Totals for the current reporting period.
+									Developer note: All fields of the summary page that are calculated by adding
+									or subtracting other values are excluded. (We might take some heat for this
+									suggestion, BUT there really is no room for interpretation about which values
+									are added to create the final summaary page values...)
+									Other developer note: omitting minOccurs/maxOccurs values means
+									'one-and-only-one'
+									by default in XSD, which I didn't know without dusting off my old XML schema
+									documentation...
+								</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+									<xs:annotation>
+										<xs:documentation xml:lang="en">
+											Summary information for the report.
+										</xs:documentation>
+									</xs:annotation>
+									<xs:sequence>
+										<xs:element name="MonetaryContributions" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="LoansReceived" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="SubtotalCashContributions" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="NonmonetaryContributions" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="TotalContributionsReceived" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="PaymentsMade" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="LoansMade" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="SubtotalCashPayments" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="AccruedExpenses" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="NonmonetaryAdjustment" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+										<xs:element name="TotalExpendituresMade" type="xs:decimal" minOccurs="0" maxOccurs="1"/>																		
+									</xs:sequence>
+								</xs:complexType>
+						</xs:element>
+						<xs:element name="ContributionsReceived1-1through6-30" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="ContributionsReceived7-1toDate" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="ExpendituresMade1-1through6-30" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="ExpendituresMade7-1toDate" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="CumulativeExpenditureMadeElectionDate1" type="xs:date" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="CumulativeExpenditureMadeTotal1" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="CumulativeExpenditureMadeElectionDate2" type="xs:date" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="CumulativeExpenditureMadeTotal2" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleA" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:annotation>
+						<xs:documentation xml:lang="en">
+							Use this section to report monetary contributions received by the filer.
+						</xs:documentation>
+					</xs:annotation>
+					<xs:sequence>
+						<xs:element name="ParentTransactionID" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									ParentTransactionID is the unique identifier and reference number for each Parent transaction uploaded into CAL-ACCESS.
+									A parent transaction is required if the Contribution is either:
+									From an Intermediary. The Parent transaction should identify the intermediary and the child transaction should identify the original donor.
+									A transfer. The Parent transaction should identify the amount transferred and the child transaction should identify the original contribution.
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="100"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="TransactionID" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									TransactionID is the unique identifier and reference number for each
+									Monetary Contribution transaction uploaded into CAL-ACCESS
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="100"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="DateReceived" type="xs:date" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									Date the contribution was received. Must be on or after the beginning of the reporting period and on or before the ending
+									date of the reporting period or a warning will be raised.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Contributor">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="ContributorID" minOccurs="0" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">
+												ContributorID is a unique identifier and reference
+												number assigned
+												by the filer. This is used to track contributions
+												from the same source despite name and/or address
+												changes.
+											</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:maxLength value="100"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:choice>
+										<xs:annotation>
+											<xs:documentation>
+												The inclusion of one of these child elements will
+												determine
+												which of the 'contributor type' checkboxes is checked,
+												eliminating the need for a separate ContributorCode
+												field
+											</xs:documentation>
+										</xs:annotation>
+										<xs:element name="Individual" type="individualType"/>
+										<xs:element name="Other" type="organizationType"/>
+										<xs:element name="SmallContributorCommittee" type="committeeType"/>
+										<xs:element name="RecipientCommittee" type="committeeType"/>
+										<xs:element name="PoliticalParty" type="committeeType"/>
+									</xs:choice>
+									<xs:element name="Address" type="addressType" minOccurs="0" maxOccurs="1"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="AmountReceived" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Enter the amount of the contribution. Negative amounts will be treated as returned contributions and shuold be linked back to
+									the original contribution being returned by setting the ParentTransactionID = the TransactionID of the original contribution
+									being returned. A warning will be raised if the amount is negative and there is no ParentTransactionID.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="CumulativeToDateCalendarYear" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Provide the total amount contributed (monetary, non-monetary or loans) from this source for the calendar year to
+									date if any non-itemized contributions have been received prior to this contribution.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Election" type="electionCycleType" minOccurs="0" maxOccurs="1">
+						<xs:annotation>
+								<xs:documentation>
+									Allows tagging of transactions using FEC-style election cycle codes, such as 'G2020'
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="PerElectionToDate" type="electionSplitListType" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Provide the total amount contributed (monetary, non-monetary or
+									loans) from this
+									source for the election cycle to
+									date if any non-itemized contributions have been received prior to
+									this
+									contribution. Ex: $3000
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>						
+						<!-- added 'IsMemo' field; see element documentation -->
+						<xs:element name="IsMemo" type="xs:boolean" minOccurs="0" maxOccurs="1">
+							<!--   -->
+							<xs:annotation>
+								<xs:documentation>
+									If true, this transaction is reported for information purposes only.
+									The transaction amount should not be considered as itemized.
+									For non-campaign-finance people reading this schema, the concept of
+									a 'memo entry' is well-established in our industry
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<!-- renamed 'Memo' field to 'Notes' because a 'memo' has a very particular 
+                                        meaning in campaign finance vernacular! -->
+						<xs:element name="Notes" type="noteListType" minOccurs="0" maxOccurs="1"/>
+						<!-- A,B1,C,F -->
+						<xs:element name="Intermediary" type="IntermediaryType" minOccurs="0" maxOccurs="1"/>
+					
+						<xs:element name="TransferFromAffiliate" type="TransferFromAffiliateType" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="ForgivenLoan" type="IntermediaryType" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="Returned" minOccurs="0" maxOccurs="1">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="TransactionId" type="xs:string" minOccurs="0" maxOccurs="1"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleA-Summary" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Summary information for Schedule A.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Itemized" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="Unitemized" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									Total amount of unitemized contributions received during the reporting period. Must be a non-negative number.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Total" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleB-Part1" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Use this section to report new loans received. Report Payments, Third Party Payments and Amounts Forgiven in
+						LoanOrDebtPaymentAndForgiveness and link to Loan via ParentTransactionID = TransactionID.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="TransactionID" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									TransactionID is the unique identifier and reference number for each
+									Loan Received transaction uploaded into CAL-ACCESS
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="100"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="Lender">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="ContributorID" minOccurs="0" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">
+												ContributorID is a unique identifier and reference
+												number assigned
+												by the filer. This is used to track contributions
+												from the same source despite name and/or address
+												changes.
+											</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:maxLength value="100"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:choice>
+										<xs:annotation>
+											<xs:documentation>
+												The inclusion of one of these child elements will
+												determine
+												which of the 'contributor type' checkboxes is checked,
+												eliminating the need for a separate ContributorCode
+												field
+											</xs:documentation>
+										</xs:annotation>
+										<xs:element name="Individual" type="individualType"/>
+										<xs:element name="Other" type="organizationType"/>
+										<xs:element name="SmallContributorCommittee" type="committeeType"/>
+										<xs:element name="RecipientCommittee" type="committeeType"/>
+										<xs:element name="PoliticalParty" type="committeeType"/>
+									</xs:choice>
+									<xs:element name="Address" type="addressType" minOccurs="1" maxOccurs="1"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="OpeningBalance" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="AmountReceived" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Amount of the loan received.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="AmountPaid" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="AmountForgiven" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="ClosingBalance" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="DueDate" type="xs:date" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Due date for the loan. Must be on or after the date the loan was received.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="InterestRate" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="InterestPaid" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="OriginalAmountOfLoan" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="OriginalAmountOfLoanDateIncurred" type="xs:date" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="CumulativeContributionsToDateCalendarYear" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									Provide the total amount contributed (monetary, non-monetary or loans) from this source for the calendar
+									year to date if any non-itemized contributions have been received prior to this contribution.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="CumulativeContributionsToDatePerElection" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									Provide the total amount contributed (monetary, non-monetary or loans) from this source for the election
+									cycle to date if any non-itemized contributions have been received prior to this contribution.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="IsMemo" type="xs:boolean" minOccurs="0" maxOccurs="1">
+							<!--   -->
+							<xs:annotation>
+								<xs:documentation>
+									If true, this transaction is reported for information purposes only.
+									The transaction amount should not be considered as itemized.
+									For non-campaign-finance people reading this schema, the concept of
+									a 'memo entry' is well-established in our industry
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<!-- renamed 'Memo' field to 'Notes' because a 'memo' has a very particular 
+                                        meaning in campaign finance vernacular! -->
+						<xs:element name="Notes" type="noteListType" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="Intermediary" type="IntermediaryType" minOccurs="0" maxOccurs="1"/>
+						<!-- A,B1,C,F -->
+						<xs:element name="TransferFromAffiliate" type="TransferFromAffiliateType" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="ForgivenLoan" type="IntermediaryType" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="Returned" minOccurs="0" maxOccurs="1">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="TransactionId" type="xs:string" minOccurs="0" maxOccurs="1"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleB-Part1-Summary" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Use this section to report unitemized loans received and payments on those unitemized loans.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SubtotalAmountReceived" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="SubtotalAmountPaid" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="SubtotalAmountForgiven" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="SubtotalClosingBalance" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="SubtotalInterestPaid" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="LoansReceived" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="LoansPaidOrForgiven" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="NetChange" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleB-Part2" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ParentTransactionID" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									ParentTransactionID is the unique identifier and reference number for each
+									Parent Loan Received transaction uploaded into CAL-ACCESS. A parent transaction
+									is required and an error will be raised if it is not present or does not match
+									the TransactionID of a LoanReceived record.
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="100"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="TransactionID" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									TransactionID is the unique identifier and reference number for each
+									Loan Guarantor transaction uploaded into CAL-ACCESS.
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="100"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="Guarantor">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="ContributorID" minOccurs="0" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">
+												ContributorID is a unique identifier and reference
+												number assigned
+												by the filer. This is used to track contributions
+												from the same source despite name and/or address
+												changes.
+											</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:maxLength value="100"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:choice>
+										<xs:annotation>
+											<xs:documentation>
+												The inclusion of one of these child elements will
+												determine
+												which of the 'contributor type' checkboxes is checked,
+												eliminating the need for a separate ContributorCode
+												field
+											</xs:documentation>
+										</xs:annotation>
+										<xs:element name="Individual" type="individualType"/>
+										<xs:element name="Other" type="organizationType"/>
+										<xs:element name="SmallContributorCommittee" type="committeeType"/>
+										<xs:element name="RecipientCommittee" type="committeeType"/>
+										<xs:element name="PoliticalParty" type="committeeType"/>
+									</xs:choice>
+									<xs:element name="Address" type="addressType" minOccurs="1" maxOccurs="1"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="LoanDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="LoanLender" minOccurs="0" maxOccurs="1">
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="60"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="AmountGuaranteed" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Amount of the loan guaranteed.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="CumulativeToDateCalendarYear" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Provide the total amount contributed (monetary, non-monetary or loans) from this source for the calendar year
+									to date if any non-itemized contributions have been received prior to this contribution.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="CumulativeToDatePerElection" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Provide the total amount contributed (monetary, non-monetary or loans) from this source for the election cycle
+									to date if any non-itemized contributions have been received prior to this contribution.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="BalanceOutStandingToDate" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="Memo" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Enter a Memo on Transaction.
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="4000"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleB-Part2-Summary" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SubtotalAmountGuaranteed" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleC" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Use this section to report non-monetary contributions received by the filer.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ParentTransactionID" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									ParentTransactionID is the unique identifier and reference number for each Parent transaction uploaded into CAL-ACCESS. A parent transaction is
+									required if the Contribution is either: From an Intermediary. The Parent transaction should identify the intermediary and the child transaction
+									should identify the original donor. A transfer. The Parent transaction should identify the amount transferred and the child transaction should
+									identify the original contribution.
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="100"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="TransactionID" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									TransactionID is the unique identifier and reference number for each
+									Nonmonetary Contribution transaction uploaded into CAL-ACCESS
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="100"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="DateReceived" type="xs:date" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									Date the contribution was received. Must be on or after the beginning of the reporting period and on or before the ending date of
+									the reporting period or a warning will be raised.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Contributor">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="ContributorID" minOccurs="0" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">
+												ContributorID is a unique identifier and reference
+												number assigned
+												by the filer. This is used to track contributions
+												from the same source despite name and/or address
+												changes.
+											</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:maxLength value="100"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:choice>
+										<xs:annotation>
+											<xs:documentation>
+												The inclusion of one of these child elements will
+												determine
+												which of the 'contributor type' checkboxes is checked,
+												eliminating the need for a separate ContributorCode
+												field
+											</xs:documentation>
+										</xs:annotation>
+										<xs:element name="Individual" type="individualType"/>
+										<xs:element name="Other" type="organizationType"/>
+										<xs:element name="SmallContributorCommittee" type="committeeType"/>
+										<xs:element name="RecipientCommittee" type="committeeType"/>
+										<xs:element name="PoliticalParty" type="committeeType"/>
+									</xs:choice>
+									<xs:element name="Address" type="addressType" minOccurs="1" maxOccurs="1"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>					
+						<xs:element name="Description" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Enter a description of the contribution.
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="4000"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+							<xs:element name="AmountFairMarketValue" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Enter the amount or fair market value of the non-monetary contribution. Negative amounts will be treated as returned contributions and
+									should be linked back to the original contribution being returned by setting the ParentTransactionID = the TransactionID of the original
+									contribution being returned. A warning will be raised if the amount is negative and there is no ParentTransactionID.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="CumulativeToDateCalendarYear" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Provide the total amount contributed (monetary, non-monetary or loans) from this source for the calendar year to date if
+									any non-itemized contributions have been received prior to this contribution.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>						
+						<xs:element name="Election" type="electionCycleType" minOccurs="0" maxOccurs="1">
+						<xs:annotation>
+								<xs:documentation>
+									Allows tagging of transactions using FEC-style election cycle codes, such as 'G2020'
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="PerElectionToDate" type="electionSplitListType" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Provide the total amount contributed (monetary, non-monetary or
+									loans) from this
+									source for the election cycle to
+									date if any non-itemized contributions have been received prior to
+									this
+									contribution. Ex: $3000
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>		
+						<xs:element name="IsMemo" type="xs:boolean" minOccurs="0" maxOccurs="1">
+							<!--   -->
+							<xs:annotation>
+								<xs:documentation>
+									If true, this transaction is reported for information purposes only.
+									The transaction amount should not be considered as itemized.
+									For non-campaign-finance people reading this schema, the concept of
+									a 'memo entry' is well-established in our industry
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<!-- renamed 'Memo' field to 'Notes' because a 'memo' has a very particular 
+                                        meaning in campaign finance vernacular! -->
+						<xs:element name="Notes" type="noteListType" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="Intermediary" type="IntermediaryType" minOccurs="0" maxOccurs="1"/>
+						<!-- A,B1,C,F -->
+						<xs:element name="TransferFromAffiliate" type="TransferFromAffiliateType" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="ForgivenLoan" type="IntermediaryType" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="Returned" minOccurs="0" maxOccurs="1">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="TransactionId" type="xs:string" minOccurs="0" maxOccurs="1"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleC-Summary" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Use this section to report unitemized non-monetary contributions received during this reporting period.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Itemized" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="Unitemized" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									Total amount of unitemized non-monetary contributions received during the reporting period. Report as 0 if no unitemized
+									nonmonetary contributions were made.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Total" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleD" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						If there is no reportable activity (no itemized or unitemized activity during this period)
+						then the entire schedule may be omitted.
+						Developer note: the presence of this element, even with the absence of the child
+						'ScheduleD-Record' elements and a contained 'ScheduleD-Summary' with only zero amount values
+						would indicate a desire by the filer to display/render a blank/zero Schedule A page.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ScheduleD-Record" minOccurs="0" maxOccurs="unbounded">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									Use this section to report payments reported on Schedules E, F, and H that are
+									contributions
+									or independent expenditures to support
+									of oppose candidates and committees.
+								</xs:documentation>
+							</xs:annotation>
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="ParentTransactionID" minOccurs="0" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">
+												ParentTransactionID is the unique identifier and reference number
+												for each
+												Parent transaction uploaded into CAL-ACCESS.
+												Specifically, this should reference a record in Schedule E,
+												ScheduleF, or
+												Schedule H.
+											</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:maxLength value="100"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:element name="TransactionID" minOccurs="1" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">
+												TransactionID is the unique identifier and reference number for each
+												expenditures transactions
+												supporting or opposing other candidates, measures and committees
+												uploaded into
+												CAL-ACCESS. This ID will be
+												used to track any amendments to the transactions.
+											</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:maxLength value="100"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<!-- change element type to xs:date -->
+									<xs:element name="Date" type="xs:date" minOccurs="1" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">
+												Date of the transaction. Must be on or after the beginning of the
+												reporting
+												period and on or before the ending date
+												of the reporting period or a warning will be raised.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<!-- 'Payee' is not a great name for this field; open to suggestions!
+                                        'Beneficiary' doesn't seem quite right because of potential for 
+                                        opposition...'Receiver'? 'Target'? 'Destination'?-->
+									<xs:element name="Contributor">
+										<xs:complexType>
+											<xs:sequence>
+												<xs:element name="ContributorID" minOccurs="0" maxOccurs="1">
+													<xs:annotation>
+														<xs:documentation xml:lang="en">
+															PayeeID is a unique identifier and reference
+															number assigned
+															by the filer. This is used to track contributions
+															from the same source despite name and/or address
+															changes.
+														</xs:documentation>
+													</xs:annotation>
+													<xs:simpleType>
+														<xs:restriction base="xs:string">
+															<xs:maxLength value="100"/>
+														</xs:restriction>
+													</xs:simpleType>
+												</xs:element>
+												<xs:choice>
+													<xs:annotation>
+														<xs:documentation>
+															Who was supported or opposed by the expenditure?
+														</xs:documentation>
+													</xs:annotation>
+													<xs:element name="Candidate" type="candidateType"/>
+													<xs:element name="Measure" type="measureType"/>
+													<xs:element name="Committee" type="committeeType"/>
+												</xs:choice>
+											</xs:sequence>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="SupportOppose" type="supportOpposeEnumeration" minOccurs="1" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">
+												Position taken regarding the candidate, officeholder, or measure.
+												Must be either
+												"Support" or "Oppose".
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="TypeOfPayment" type="scheduleDPaymentType" minOccurs="1" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">
+												Monetary
+												Nonmonetary
+												IndependentExpenditure
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<xs:element name="Description" minOccurs="0" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">
+												Payment description if TypeOfPayment = OTH.
+											</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:maxLength value="4000"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<!-- notice the name change from "AmountThisPeriod" -->
+									<xs:element name="Amount" type="xs:decimal" minOccurs="1" maxOccurs="1"/>
+									<!-- notice name change from "CumulativeToDateCalendarYear" -->
+									<xs:element name="CumulativeYearToDate" type="xs:decimal" minOccurs="1" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">
+												Provide the total amount contributed (monetary, non-monetary or
+												loans) to this
+												candidate/measure/committee
+												for the calendar year to date if any non-itemized expenditures have
+												been made
+												prior to this expenditure.
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<!-- added an explicit Election field to allow data researchers to get direct
+                                    attribution of the election cycle, rather than inferring the election cycle based
+                                    on the PerElectionToDate list -->
+									<xs:element name="Election" type="electionCycleType" minOccurs="0" maxOccurs="1">
+										<xs:annotation>
+												<xs:documentation>
+													Allows tagging of transactions using FEC-style election cycle codes, such as 'G2020'
+												</xs:documentation>
+											</xs:annotation>
+										</xs:element>
+										<xs:element name="PerElectionToDate" type="electionSplitListType" minOccurs="0" maxOccurs="1">
+											<xs:annotation>
+												<xs:documentation>
+													Provide the total amount contributed (monetary, non-monetary or
+													loans) from this
+													source for the election cycle to
+													date if any non-itemized contributions have been received prior to
+													this
+													contribution. Ex: $3000
+												</xs:documentation>
+											</xs:annotation>
+										</xs:element>		
+									<!-- added 'IsMemo' field; see element documentation -->
+									<xs:element name="IsMemo" type="xs:boolean" minOccurs="0" maxOccurs="1">
+										<!--   -->
+										<xs:annotation>
+											<xs:documentation>
+												If true, this transaction is reported for information purposes only.
+												The transaction amount should not be considered as itemized.
+												For non-campaign-finance people reading this schema, the concept of
+												a 'memo entry' is well-established in our industry
+											</xs:documentation>
+										</xs:annotation>
+									</xs:element>
+									<!-- renamed 'Memo' field to 'Notes' because a 'memo' has a very particular 
+			                                        meaning in campaign finance vernacular! -->
+									<xs:element name="Notes" type="noteListType" minOccurs="0" maxOccurs="1"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleD-Summary" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Itemized" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="Unitemized" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									Total amount of unitemized expenditures made this period supporting/opposing candidates, committees, and measures. Report as 0
+									if no unitemized contributinos ot other candidates or committees were made.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Total" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleE" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ParentTransactionID" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									ParentTransactionID is the unique identifier and reference number for each
+									Parent transaction uploaded into CAL-ACCESS
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="100"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="TransactionID" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									TransactionID is the unique identifier and reference number for each Payments Made
+									transaction uploaded into CAL-ACCESS. This ID will be referenced in Schedule D records for
+									Expenditures Supporting/Opposing Other Candidates, Measures, and Committees and Schedule G
+									records for Payments Made by an Agent or Independent Contractor.
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="100"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="Payee">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="PayeeID" minOccurs="0" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">
+												ContributorID is a unique identifier and reference
+												number assigned
+												by the filer. This is used to track contributions
+												from the same source despite name and/or address
+												changes.
+											</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:maxLength value="100"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:choice>
+										<xs:annotation>
+											<xs:documentation>
+												The inclusion of one of these child elements will
+												determine
+												which of the 'contributor type' checkboxes is checked,
+												eliminating the need for a separate ContributorCode
+												field
+											</xs:documentation>
+										</xs:annotation>
+										<xs:element name="Individual" type="individualType"/>
+										<xs:element name="Committee" type="committeeType"/>
+									</xs:choice>
+									<xs:element name="Address" type="addressType" minOccurs="1" maxOccurs="1"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="PaymentCode" type="paymentTypeCodeEnumeration" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									CODES: If one of the following codes accurately describes the payment, you may enter the code. Otherwise, describe the payment.
+									CMP campaign paraphernalia/misc.
+									CNS campaign consultants
+									CTB contribution (explain nonmonetary)*
+									CVC civic donations
+									FIL candidate filing/ballot fees
+									FND fundraising events
+									IND independent expenditure supporting/opposing others (explain)*
+									LEG legal defense
+									LIT campaign literature and mailings
+									MBR member communications
+									MTG meetings and appearances
+									OFC office expenses
+									PET petition circulating
+									PHO phone banks
+									POL polling and survey research
+									POS postage, delivery and messenger services
+									PRO professional services (legal, accounting)
+									PRT print ads
+									RAD radio airtime and production costs
+									RFD returned contributions
+									SAL campaign workers’ salaries
+									TEL t.v. or cable airtime and production costs
+									TRC candidate travel, lodging, and meals
+									TRS staff/spouse travel, lodging, and meals
+									TSF transfer between committees of the same candidate/sponsor
+									VOT voter registration
+									WEB information technology costs (internet, e-mail)
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="DescriptionOfPayment" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Provide a description of the expenditure.
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="4000"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="AmountPaid" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Provide the amount of the expenditure. If a negative number, this will be recorded as a return on an expenditure. If a negative, then there
+									must be a ParentTransactionID provided or an error will be raised.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<!-- added 'IsMemo' field; see element documentation -->
+						<xs:element name="IsMemo" type="xs:boolean" minOccurs="0" maxOccurs="1">
+							<!--   -->
+							<xs:annotation>
+								<xs:documentation>
+									If true, this transaction is reported for information purposes only.
+									The transaction amount should not be considered as itemized.
+									For non-campaign-finance people reading this schema, the concept of
+									a 'memo entry' is well-established in our industry
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<!-- renamed 'Memo' field to 'Notes' because a 'memo' has a very particular 
+			                                        meaning in campaign finance vernacular! -->
+						<xs:element name="Notes" type="noteListType" minOccurs="0" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleE-Summary" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Use this section to report unitemized expenditure made during this reporting period.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Itemized" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="Unitemized" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Amount of unitemized payments under $100 made during the reporting period. Report as 0 if no unitemized payments were made.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="TotalInterestPaid" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="TotalPaymentsMade" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleF" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>
+						Use this section to list out any accrued expenses incurred during the reporting period. If the accrued expense was used to support
+						a candidate, ballot measure, or other committee, there should be a related record in ScheduleD referencing the TransactionID as a
+						parent transaction. If there are sub-vendor payments to be itemized, they should be listed in ScheduleG with a ParentTransactionID
+						referring back to the TransactionID. Payments and Forgiveness of the accrued expense shall be reported in the
+						LoanOrDebtPaymentAndForgiveness section referenced to a Loan by ParentTransactionID = TransactionID.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ParentTransactionID" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									ParentTransactionID is the unique identifier and reference number for each Parent transaction uploaded into CAL-ACCESS.
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="100"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="TransactionID" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									TransactionID is the unique identifier and reference number for each Accrued Expenses
+									transaction uploaded into CAL-ACCESS. This ID may be referenced as a ParentTransactionID for any
+									transaction through an agent reported on Schedule G.
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="100"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="Creditor">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="CreditorID" minOccurs="0" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">
+												ContributorID is a unique identifier and reference
+												number assigned
+												by the filer. This is used to track contributions
+												from the same source despite name and/or address
+												changes.
+											</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:maxLength value="100"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:choice>
+										<xs:annotation>
+											<xs:documentation>
+												The inclusion of one of these child elements will
+												determine
+												which of the 'contributor type' checkboxes is checked,
+												eliminating the need for a separate ContributorCode
+												field
+											</xs:documentation>
+										</xs:annotation>
+										<xs:element name="Individual" type="individualType"/>
+										<xs:element name="Committee" type="committeeType"/>
+									</xs:choice>
+									<xs:element name="Address" type="addressType" minOccurs="1" maxOccurs="1"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="PaymentCode" type="paymentTypeCodeEnumeration" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									CODES: If one of the following codes accurately describes the payment, you may enter the code. Otherwise, describe the payment.
+									CMP campaign paraphernalia/misc.
+									CNS campaign consultants
+									CTB contribution (explain nonmonetary)*
+									CVC civic donations
+									FIL candidate filing/ballot fees
+									FND fundraising events
+									IND independent expenditure supporting/opposing others (explain)*
+									LEG legal defense
+									LIT campaign literature and mailings
+									MBR member communications
+									MTG meetings and appearances
+									OFC office expenses
+									PET petition circulating
+									PHO phone banks
+									POL polling and survey research
+									POS postage, delivery and messenger services
+									PRO professional services (legal, accounting)
+									PRT print ads
+									RAD radio airtime and production costs
+									RFD returned contributions
+									SAL campaign workers’ salaries
+									TEL t.v. or cable airtime and production costs
+									TRC candidate travel, lodging, and meals
+									TRS staff/spouse travel, lodging, and meals
+									TSF transfer between committees of the same candidate/sponsor
+									VOT voter registration
+									WEB information technology costs (internet, e-mail)
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="DescriptionOfPayment" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Provide a description of the expenditure.
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="4000"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="OutstandingBalanceBeginningThisPeriod" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="AmountIncurredThisPeriod" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Provide the amount of the accrued expense.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="AmountPaidThisPeriod" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="OutstandingBalanceCloseThisPeriod" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<!-- added 'IsMemo' field; see element documentation -->
+						<xs:element name="IsMemo" type="xs:boolean" minOccurs="0" maxOccurs="1">
+							<!--   -->
+							<xs:annotation>
+								<xs:documentation>
+									If true, this transaction is reported for information purposes only.
+									The transaction amount should not be considered as itemized.
+									For non-campaign-finance people reading this schema, the concept of
+									a 'memo entry' is well-established in our industry
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<!-- renamed 'Memo' field to 'Notes' because a 'memo' has a very particular 
+			                                        meaning in campaign finance vernacular! -->
+						<xs:element name="Notes" type="noteListType" minOccurs="0" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleF-Summary" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Use this section to report unitemized accrued expenses incurred or paid during this reporting period.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SubTotalOutstandingBalanceBeginning" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="SubTotalAmountIncurred" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="SubTotalAmountPaid" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="SubTotalOutstandingBalanceClose" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="TotalAccruedExpensesIncurred" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="TotalAccruedExpensesPaid" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="NetChange" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleG" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Use this section to report any sub-vendor payments linked to Payments Made (Schedule E) or Accrued Expenses
+						(Schedule F). All records in this section must have a ParentTransactionID that is found as either the
+						TransactionID for a record in Schedule E or the TransationID for a record in
+						Schedule F. Any records not so matched will be marked as an error.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="ParentTransactionID" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									ParentTransactionID is the unique identifier and reference number for each parent Payment Made or Accrued Expense
+									record in schedule E or F. Unmatched records will be marked as an error.
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="100"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="TransactionID" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									TransactionID is the unique identifier and reference number for each Sub-vendor Payment Made transaction uploaded into CAL-ACCESS
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="100"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="NameOfAgentOrIndependentContractor" type="xs:string" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="PayeeOrCreditor">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="PayeeOrCreditorID" minOccurs="0" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">
+												ContributorID is a unique identifier and reference
+												number assigned
+												by the filer. This is used to track contributions
+												from the same source despite name and/or address
+												changes.
+											</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:maxLength value="100"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:choice>
+										<xs:annotation>
+											<xs:documentation>
+												The inclusion of one of these child elements will
+												determine
+												which of the 'contributor type' checkboxes is checked,
+												eliminating the need for a separate ContributorCode
+												field
+											</xs:documentation>
+										</xs:annotation>
+										<xs:element name="Individual" type="individualType"/>
+										<xs:element name="Committee" type="committeeType"/>
+									</xs:choice>
+									<xs:element name="Address" type="addressType" minOccurs="1" maxOccurs="1"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="PaymentCode" type="paymentTypeCodeEnumeration" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									CODES: If one of the following codes accurately describes the payment, you may enter the code. Otherwise, describe the payment.
+									CMP campaign paraphernalia/misc.
+									CNS campaign consultants
+									CTB contribution (explain nonmonetary)*
+									CVC civic donations
+									FIL candidate filing/ballot fees
+									FND fundraising events
+									IND independent expenditure supporting/opposing others (explain)*
+									LEG legal defense
+									LIT campaign literature and mailings
+									MBR member communications
+									MTG meetings and appearances
+									OFC office expenses
+									PET petition circulating
+									PHO phone banks
+									POL polling and survey research
+									POS postage, delivery and messenger services
+									PRO professional services (legal, accounting)
+									PRT print ads
+									RAD radio airtime and production costs
+									RFD returned contributions
+									SAL campaign workers’ salaries
+									TEL t.v. or cable airtime and production costs
+									TRC candidate travel, lodging, and meals
+									TRS staff/spouse travel, lodging, and meals
+									TSF transfer between committees of the same candidate/sponsor
+									VOT voter registration
+									WEB information technology costs (internet, e-mail)
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="DescriptionOfPayment" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Provide a description of the payment to the sub-vendor.
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="4000"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="AmountPaid" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Provide the amount of the payment to the sub-vendor.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="IsMemo" type="xs:boolean" minOccurs="0" maxOccurs="1">
+							<!--   -->
+							<xs:annotation>
+								<xs:documentation>
+									If true, this transaction is reported for information purposes only.
+									The transaction amount should not be considered as itemized.
+									For non-campaign-finance people reading this schema, the concept of
+									a 'memo entry' is well-established in our industry
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<!-- renamed 'Memo' field to 'Notes' because a 'memo' has a very particular 
+                                        meaning in campaign finance vernacular! -->
+						<xs:element name="Notes" type="noteListType" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="Intermediary" type="IntermediaryType" minOccurs="0" maxOccurs="1"/>
+						<!-- A,B1,C,F -->
+						<xs:element name="TransferFromAffiliate" type="TransferFromAffiliateType" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="ForgivenLoan" type="IntermediaryType" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="Returned" minOccurs="0" maxOccurs="1">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="TransactionId" type="xs:string" minOccurs="0" maxOccurs="1"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleG-Summary" minOccurs="0" maxOccurs="1">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SubtotalAmountPaid" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleH" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Use this section to disclose any Loans Made. Only report new or updated Loans Made. Payments
+						and Forgiveness of the loan made shall be reported in the LoanOrDebtPaymentAndForgiveness
+						section referenced to a Loan by ParentTransactionID = TransactionID.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="TransactionID" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									TransactionID is the unique identifier and reference number for each
+									Loans Made transaction uploaded into CAL-ACCESS
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="100"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="Recipient">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="RecipientID" minOccurs="0" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">
+												ContributorID is a unique identifier and reference
+												number assigned
+												by the filer. This is used to track contributions
+												from the same source despite name and/or address
+												changes.
+											</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:maxLength value="100"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:choice>
+										<xs:annotation>
+											<xs:documentation>
+												The inclusion of one of these child elements will
+												determine
+												which of the 'contributor type' checkboxes is checked,
+												eliminating the need for a separate ContributorCode
+												field
+											</xs:documentation>
+										</xs:annotation>
+										<xs:element name="Individual" type="individualType"/>
+										<xs:element name="Committee" type="committeeType"/>
+									</xs:choice>
+									<xs:element name="Address" type="addressType" minOccurs="1" maxOccurs="1"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="OutstandingBalanceBeginningThisPeriod" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="AmountLoanedThisPeriod" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Enter the amount of the loan made. Must be a positive, non-zero number.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="RepaymentorForgivenessPaid" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="RepaymentorForgivenessForgiven" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="OutstandingBalanceatClose" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="OutstandingBalanceCloseDueDate" type="xs:date" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="InterestReceivedThisPeriodRate" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Enter the interest rate changed for this loan as either a decimal or percentage (e.g. 0.025 or 2.5%.). Enter 0 if no interest will  be charged.
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="10"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="InterestReceivedThisPeriod" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="OriginalAmountOfLoan" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="OriginalAmountOfLoanDateIncurred" type="xs:date" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="CumulativeLoansToDateCalendarYear" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="CumulativeLoansToDatePerElection" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<!-- added 'IsMemo' field; see element documentation -->
+						<xs:element name="IsMemo" type="xs:boolean" minOccurs="0" maxOccurs="1">
+							<!--   -->
+							<xs:annotation>
+								<xs:documentation>
+									If true, this transaction is reported for information purposes only.
+									The transaction amount should not be considered as itemized.
+									For non-campaign-finance people reading this schema, the concept of
+									a 'memo entry' is well-established in our industry
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<!-- renamed 'Memo' field to 'Notes' because a 'memo' has a very particular 
+			                                        meaning in campaign finance vernacular! -->
+						<xs:element name="Notes" type="noteListType" minOccurs="0" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleH-Summary" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation>
+						Use this section to report unitemized loans made and payments on those unitemized loans.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="SubTotalAmountLoaned" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="SubTotalRepaymentOrForgiveness" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="SubTotalOutstandingBalanceClose" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="SubTotalInterestReceived" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="LoansMade" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="PaymentsReceivedOnLoans" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="NetChange" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleI" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Use this section to report miscellaneous increases to cash.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="TransactionID" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									TransactionID is the unique identifier and reference number for each
+									Miscellaneous Increases To Cash transaction uploaded into CAL-ACCESS
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="100"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="DateReceived" type="xs:date" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation xml:lang="en">
+									Date of the Miscellaneous Increase to Cash. Must be on or after the beginning of the reporting period
+									and on or before the ending date of the reporting period or a warning will be raised.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="Source">
+							<xs:complexType>
+								<xs:sequence>
+									<xs:element name="SourceID" minOccurs="0" maxOccurs="1">
+										<xs:annotation>
+											<xs:documentation xml:lang="en">
+												ContributorID is a unique identifier and reference
+												number assigned
+												by the filer. This is used to track contributions
+												from the same source despite name and/or address
+												changes.
+											</xs:documentation>
+										</xs:annotation>
+										<xs:simpleType>
+											<xs:restriction base="xs:string">
+												<xs:maxLength value="100"/>
+											</xs:restriction>
+										</xs:simpleType>
+									</xs:element>
+									<xs:choice>
+										<xs:annotation>
+											<xs:documentation>
+												The inclusion of one of these child elements will
+												determine
+												which of the 'contributor type' checkboxes is checked,
+												eliminating the need for a separate ContributorCode
+												field
+											</xs:documentation>
+										</xs:annotation>
+										<xs:element name="Individual" type="individualType"/>
+										<xs:element name="Committee" type="committeeType"/>
+									</xs:choice>
+									<xs:element name="Address" type="addressType" minOccurs="1" maxOccurs="1"/>
+								</xs:sequence>
+							</xs:complexType>
+						</xs:element>
+						<xs:element name="DescriptionOfReceipt" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Description of the increase to cash.
+								</xs:documentation>
+							</xs:annotation>
+							<xs:simpleType>
+								<xs:restriction base="xs:string">
+									<xs:maxLength value="4000"/>
+								</xs:restriction>
+							</xs:simpleType>
+						</xs:element>
+						<xs:element name="AmountOfIncreaseToCash" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Enter the amount of the increase to cash. Must be a positive, non-zero number.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<!-- added 'IsMemo' field; see element documentation -->
+						<xs:element name="IsMemo" type="xs:boolean" minOccurs="0" maxOccurs="1">
+							<!--   -->
+							<xs:annotation>
+								<xs:documentation>
+									If true, this transaction is reported for information purposes only.
+									The transaction amount should not be considered as itemized.
+									For non-campaign-finance people reading this schema, the concept of
+									a 'memo entry' is well-established in our industry
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<!-- renamed 'Memo' field to 'Notes' because a 'memo' has a very particular 
+			                                        meaning in campaign finance vernacular! -->
+						<xs:element name="Notes" type="noteListType" minOccurs="0" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="ScheduleI-Summary" minOccurs="0" maxOccurs="1">
+				<xs:annotation>
+					<xs:documentation xml:lang="en">
+						Use this section to report unitemized Miscellaneous Increases to Cash. Do not include interest received for payments
+						on Loans Made. That should be reported along with the Loan Payment in the LoanOrDebtPaymentAndForgiveness section.
+						The interest payments will be totaled up and added to the generated Schedule I Summary.
+					</xs:documentation>
+				</xs:annotation>
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="Itemized" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="Unitemized" type="xs:decimal" minOccurs="0" maxOccurs="1">
+							<xs:annotation>
+								<xs:documentation>
+									Report the total of increases to cash of under $100 for the reporting period.
+								</xs:documentation>
+							</xs:annotation>
+						</xs:element>
+						<xs:element name="TotalInterestReceivedOnLoansMadeToOthers" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+						<xs:element name="TotalMiscellaneousIncreasesToCase" type="xs:decimal" minOccurs="0" maxOccurs="1"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>
