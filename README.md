@@ -16,6 +16,9 @@ vendorEmail: TBD
 client_id: TBD
 client_secret: TBD
 vendorCode: TBD
+verbose: true
+caa_url_base: TBD
+cada_url_base: TBD
 % 
 ```
 These will be added as headers to the requests.
