@@ -14,6 +14,7 @@ import org.ganymede.cars.U;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class FilersTest {
@@ -36,11 +37,33 @@ public class FilersTest {
 	private static final int EXPECT_FAIL = 1;
 	private static final int EXPECT_EMPTY = 2;
 
+	private static String urlBase = null;
+
+	private static String clientId = null;
+	private static String clientSecret = null;
+	private static String vendorCode = null;
+
+	private static boolean verbose = false;
+
+	@BeforeClass
+	public static void setup() {
+
+		Properties p = U.readPropertiesFile(System.getProperty("user.home") + File.separator + ".calaccess_api.txt");
+
+		urlBase = p.getProperty("cada_url_base", U.DEFAULT_CADA_URL_BASE);
+
+		clientId = p.getProperty("client_id");
+		clientSecret = p.getProperty("client_secret");
+		vendorCode = p.getProperty("vendorCode");
+
+		verbose = p.getProperty("verbose", "false").equals("true");
+	}
+
 	@Test
 	public void testGetFilersForMeasures() {
 
 		String result = getFilersCall(
-				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers?type=measure&from=2019&to=2020",
+				urlBase + "/filers?type=measure&from=2019&to=2020",
 				200,
 				EXPECT_PASS);
 
@@ -62,7 +85,7 @@ public class FilersTest {
 	public void testGetFilersForCommittees() {
 
 		String result = getFilersCall(
-				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers?type=committee&from=2019&to=2020",
+				urlBase + "/filers?type=committee&from=2019&to=2020",
 				200,
 				EXPECT_PASS);
 
@@ -84,7 +107,7 @@ public class FilersTest {
 	public void testGetFilersForLobbyists() {
 
 		String result = getFilersCall(
-				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers?type=lobbyist&from=2019&to=2020",
+				urlBase + "/filers?type=lobbyist&from=2019&to=2020",
 				200,
 				EXPECT_PASS);
 
@@ -106,7 +129,7 @@ public class FilersTest {
 	public void testGetFilersForCandidates() {
 
 		String result = getFilersCall(
-				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers?type=candidate&from=2019&to=2020",
+				urlBase + "/filers?type=candidate&from=2019&to=2020",
 				200,
 				EXPECT_PASS);
 
@@ -128,7 +151,7 @@ public class FilersTest {
 	public void testGetFilerProfile() {
 
 		String result = getFilersCall(
-				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers/" + FILER_FOR_MEASURE_ID,
+				urlBase + "/filers/" + FILER_FOR_MEASURE_ID,
 				200,
 				EXPECT_PASS);
 
@@ -138,7 +161,7 @@ public class FilersTest {
 		Assert.assertEquals("444 Ballot St.", obj2.get("street"));
 
 		result = getFilersCall(
-				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers/" + FILER_FOR_COMMITTEE_ID,
+				urlBase + "/filers/" + FILER_FOR_COMMITTEE_ID,
 				200,
 				EXPECT_PASS);
 
@@ -147,7 +170,7 @@ public class FilersTest {
 		Assert.assertEquals("AM Test Controlled Committee 6", obj1.get("name"));
 
 		result = getFilersCall(
-				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers/" + FILER_FOR_LOBBYIST_ID,
+				urlBase + "/filers/" + FILER_FOR_LOBBYIST_ID,
 				200,
 				EXPECT_PASS);
 
@@ -157,7 +180,7 @@ public class FilersTest {
 		Assert.assertEquals("idasmith@yopmail.com", obj2.get("email"));
 
 		result = getFilersCall(
-				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers/" + FILER_FOR_CANDIDATE_ID,
+				urlBase + "/filers/" + FILER_FOR_CANDIDATE_ID,
 				200,
 				EXPECT_PASS);
 
@@ -170,7 +193,7 @@ public class FilersTest {
 	public void testGetFilerTopTenContributors() {
 
 		String result = getFilersCall(
-				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers/" + FILER_FOR_CANDIDATE_ID_ALT + "/top10Contributors?from=2019&to=2020",
+				urlBase + "/filers/" + FILER_FOR_CANDIDATE_ID_ALT + "/top10Contributors?from=2019&to=2020",
 				200,
 				EXPECT_PASS);
 
@@ -184,7 +207,7 @@ public class FilersTest {
 	public void testGetFilerTopTenContributorsEmpty() {
 
 		String result = getFilersCall(
-				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers/" + FILER_FOR_CANDIDATE_ID + "/top10Contributors?from=2019&to=2020",
+				urlBase + "/filers/" + FILER_FOR_CANDIDATE_ID + "/top10Contributors?from=2019&to=2020",
 				200,
 				EXPECT_EMPTY);
 
@@ -195,7 +218,7 @@ public class FilersTest {
 	public void testGetFilerLobbyistEmptoyers() {
 
 		String result = getFilersCall(
-				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers/1378380/lobbying-employers?from=2018&to=2020",
+				urlBase + "/filers/1378380/lobbying-employers?from=2018&to=2020",
 				200,
 				EXPECT_EMPTY);
 
@@ -206,7 +229,7 @@ public class FilersTest {
 	public void testGetFilerContributorPayees() {
 
 		String result = getFilersCall(
-				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers/1378380/contributors-payees?from=2018&to=2020",
+				urlBase + "/filers/1378380/contributors-payees?from=2018&to=2020",
 				200,
 				EXPECT_EMPTY);
 
@@ -217,7 +240,7 @@ public class FilersTest {
 	public void testGetFilerSpenders() {
 
 		getFilersCall(
-				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers/1378313/spenders",
+				urlBase + "/filers/1378313/spenders",
 				200,
 				EXPECT_FAIL);
 	}
@@ -246,13 +269,9 @@ public class FilersTest {
 
 		con.setRequestProperty("Content-Type", "application/json");
 
-		Properties p = U.readPropertiesFile(System.getProperty("user.home") + File.separator + ".calaccess_api.txt");
-
-		con.setRequestProperty("client_id", p.getProperty("client_id"));
-		con.setRequestProperty("client_secret", p.getProperty("client_secret"));
-		con.setRequestProperty("vendorCode", p.getProperty("vendorCode"));
-
-		boolean verbose = p.getProperty("verbose", "false").equals("true");
+		if (clientId != null) con.setRequestProperty("client_id", clientId);
+		if (clientSecret != null) con.setRequestProperty("client_secret", clientSecret);
+		if (vendorCode != null) con.setRequestProperty("vendorCode", vendorCode);
 
 		int status = -1;
 		try {

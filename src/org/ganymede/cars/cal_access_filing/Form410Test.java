@@ -14,12 +14,38 @@ import javax.net.ssl.HttpsURLConnection;
 
 import org.ganymede.cars.U;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 public class Form410Test {
 
+	private static String urlBase = null;
+
+	private static String clientId = null;
+	private static String clientSecret = null;
+	private static String vendorCode = null;
+	private static String vendorEmail = null;
+
+	@SuppressWarnings("unused")
+	private static boolean verbose = false;
+
+	@BeforeClass
+	public static void setup() {
+
+		Properties p = U.readPropertiesFile(System.getProperty("user.home") + File.separator + ".calaccess_api.txt");
+
+		urlBase = p.getProperty("caa_url_base", U.DEFAULT_CAA_URL_BASE);
+
+		clientId = p.getProperty("client_id");
+		clientSecret = p.getProperty("client_secret");
+		vendorCode = p.getProperty("vendorCode");
+		vendorEmail = p.getProperty("vendorEmail");
+
+		verbose = p.getProperty("verbose", "false").equals("true");
+	}
+
 	@Test
-	public void testOne() { }
+	public void testNothing() {}
 
 	//@Test
 	public void testGetForm410() {
@@ -30,7 +56,7 @@ public class Form410Test {
 
 		URL url = null;
 		try {
-			url = new URL(U.URL_BASE + "/filers/" + filerID + "/forms?form_type=F410");
+			url = new URL(urlBase + "/filers/" + filerID + "/forms?form_type=F410");
 		} catch (java.net.MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -50,12 +76,10 @@ public class Form410Test {
 
 		con.setRequestProperty("Content-Type", "application/octet-stream");
 
-		Properties p = U.readPropertiesFile(System.getProperty("user.home") + File.separator + ".calaccess_api.txt");
-
-		con.setRequestProperty("vendorEmail", p.getProperty("vendorEmail"));
-		con.setRequestProperty("client_id", p.getProperty("client_id"));
-		con.setRequestProperty("client_secret", p.getProperty("client_secret"));
-		con.setRequestProperty("vendorCode", p.getProperty("vendorCode"));
+		if (clientId != null) con.setRequestProperty("client_id", clientId);
+		if (clientSecret != null) con.setRequestProperty("client_secret", clientSecret);
+		if (vendorCode != null) con.setRequestProperty("vendorCode", vendorCode);
+		if (vendorEmail != null) con.setRequestProperty("vendorEmail", vendorEmail);
 
 		int status = -1;
 		try {
@@ -207,7 +231,7 @@ public class Form410Test {
 
 		URL url = null;
 		try {
-			url = new URL(U.URL_BASE + "/filers/" + filerID + "/forms?form_type=F410");
+			url = new URL(urlBase + "/filers/" + filerID + "/forms?form_type=F410");
 		} catch (java.net.MalformedURLException e) {
 			e.printStackTrace();
 		}

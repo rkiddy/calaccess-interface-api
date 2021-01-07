@@ -8,9 +8,8 @@ import org.json.simple.parser.ParseException;
 
 public class U {
 
-	public final static String URL_BASE = "https://cal-access-int.us-w1.cloudhub.io/api";
-
-	//GET https://cal-access-int.us-w1.cloudhub.io/api/filers?type=committee&from=2019&to=2020
+	public final static String DEFAULT_CAA_URL_BASE = "https://cal-access-int.us-w1.cloudhub.io/api";
+	public final static String DEFAULT_CADA_URL_BASE = "https://cal-access-data-int.us-w1.cloudhub.io/api";
 
 	public static final String FORM410_ORIGINAL_MOCK = "data/form410_original_mock.xml";
 	public static final String FORM410_FIXED_MOCK = "data/form410_fixed_mock.xml";
