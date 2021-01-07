@@ -32,8 +32,9 @@ public class FilersTest {
 
 	private static final String FILER_FOR_CANDIDATE_ID_ALT = "1378261";
 
-	private static final boolean EXPECT_PASS = false;
-	private static final boolean EXPECT_FAIL = true;
+	private static final int EXPECT_PASS = 0;
+	private static final int EXPECT_FAIL = 1;
+	private static final int EXPECT_EMPTY = 2;
 
 	@Test
 	public void testGetFilersForMeasures() {
@@ -179,32 +180,37 @@ public class FilersTest {
 		Assert.assertEquals("Central Board of Higher Education", obj1.get("committeeName"));
 	}
 
-	//@Test
+	@Test
 	public void testGetFilerTopTenContributorsEmpty() {
 
-		getFilersCall(
+		String result = getFilersCall(
 				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers/" + FILER_FOR_CANDIDATE_ID + "/top10Contributors?from=2019&to=2020",
 				200,
-				EXPECT_FAIL);
+				EXPECT_EMPTY);
+
+		Assert.assertTrue(result.contains("No records found"));
 	}
 
-
-	//@Test - always fails. No message sent yet.
+	@Test
 	public void testGetFilerLobbyistEmptoyers() {
 
-		getFilersCall(
+		String result = getFilersCall(
 				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers/1378380/lobbying-employers?from=2018&to=2020",
 				200,
-				EXPECT_FAIL);
+				EXPECT_EMPTY);
+
+		Assert.assertTrue(result.contains("No records found"));
 	}
 
-	//@Test - again "No records found"
+	@Test
 	public void testGetFilerContributorPayees() {
 
-		getFilersCall(
+		String result = getFilersCall(
 				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers/1378380/contributors-payees?from=2018&to=2020",
 				200,
-				EXPECT_FAIL);
+				EXPECT_EMPTY);
+
+		Assert.assertTrue(result.contains("No records found"));
 	}
 
 	//@Test - returns an error. Email sent, because the error looks weird.
@@ -216,7 +222,7 @@ public class FilersTest {
 				EXPECT_FAIL);
 	}
 
-	public String getFilersCall(String urlStr, int expectedStatus, boolean returnErrorOutput) {
+	public String getFilersCall(String urlStr, int expectedStatus, int expected) {
 
 		URL url = null;
 		try {
@@ -252,10 +258,10 @@ public class FilersTest {
 		try {
 			status = con.getResponseCode();
 		} catch (java.io.IOException e) {
-			e.printStackTrace();
+			System.err.println(e.getStackTrace()[1]);
 		}
 
-		if ( ! returnErrorOutput) {
+		if (expected == EXPECT_PASS) {
 			Assert.assertEquals(expectedStatus, status);
 		}
 
@@ -268,15 +274,16 @@ public class FilersTest {
 			if (fis != null) {
 				try (InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
 						BufferedReader br = new BufferedReader(isr)) {
-					if (returnErrorOutput) {
+					if (expected != EXPECT_PASS) {
 						br.lines().forEach(line -> result.append(line + "\n"));
 					}
 				}
 			}
 
 		} catch (java.io.IOException e) {
-			;
-			e.printStackTrace();
+			if (expected == EXPECT_PASS) {
+				System.err.println(e.getStackTrace()[1]);
+			}
 		}
 
 		try {
@@ -286,15 +293,16 @@ public class FilersTest {
 			if (fis != null) {
 				try (InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
 						BufferedReader br = new BufferedReader(isr)) {
-					if ( ! returnErrorOutput) {
+					if (expected != EXPECT_FAIL) {
 						br.lines().forEach(line -> result.append(line + "\n"));
 					}
 				}
 			}
 
 		} catch (java.io.IOException e) {
-			;
-			e.printStackTrace();
+			if (expected == EXPECT_PASS) {
+				System.err.println(e.getStackTrace()[1]);
+			}
 		}
 
 		if (verbose) {
