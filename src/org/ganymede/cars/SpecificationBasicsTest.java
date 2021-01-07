@@ -1,4 +1,4 @@
-package org.ganymede.cars.api_test;
+package org.ganymede.cars;
 
 import java.io.File;
 import java.util.ArrayList;

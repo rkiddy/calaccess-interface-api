@@ -34,7 +34,6 @@
 	<target name="execute" depends="compile">
 		<junit printsummary="on" fork="true" haltonfailure="yes">
 			<classpath refid="junit.class.path" />
-			<formatter type="plain" usefile="false" />
 			<batchtest todir="${test.report.dir}">
 				<fileset dir="${src}">
 					<include name="**/*Test*.java" />
