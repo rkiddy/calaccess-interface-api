@@ -32,13 +32,16 @@ public class FilersTest {
 
 	private static final String FILER_FOR_CANDIDATE_ID_ALT = "1378261";
 
+	private static final boolean EXPECT_PASS = false;
+	private static final boolean EXPECT_FAIL = true;
+
 	@Test
 	public void testGetFilersForMeasures() {
 
 		String result = getFilersCall(
 				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers?type=measure&from=2019&to=2020",
 				200,
-				false);
+				EXPECT_PASS);
 
 		JSONArray top = (JSONArray) U.json(result);
 
@@ -60,7 +63,7 @@ public class FilersTest {
 		String result = getFilersCall(
 				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers?type=committee&from=2019&to=2020",
 				200,
-				false);
+				EXPECT_PASS);
 
 		JSONArray top = (JSONArray) U.json(result);
 
@@ -82,7 +85,7 @@ public class FilersTest {
 		String result = getFilersCall(
 				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers?type=lobbyist&from=2019&to=2020",
 				200,
-				false);
+				EXPECT_PASS);
 
 		JSONArray top = (JSONArray) U.json(result);
 
@@ -104,7 +107,7 @@ public class FilersTest {
 		String result = getFilersCall(
 				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers?type=candidate&from=2019&to=2020",
 				200,
-				false);
+				EXPECT_PASS);
 
 		JSONArray top = (JSONArray) U.json(result);
 
@@ -126,7 +129,7 @@ public class FilersTest {
 		String result = getFilersCall(
 				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers/" + FILER_FOR_MEASURE_ID,
 				200,
-				false);
+				EXPECT_PASS);
 
 		JSONArray top = (JSONArray) U.json(result);
 		JSONObject obj1 = (JSONObject)top.get(0);
@@ -136,7 +139,7 @@ public class FilersTest {
 		result = getFilersCall(
 				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers/" + FILER_FOR_COMMITTEE_ID,
 				200,
-				false);
+				EXPECT_PASS);
 
 		top = (JSONArray) U.json(result);
 		obj1 = (JSONObject)top.get(0);
@@ -145,7 +148,7 @@ public class FilersTest {
 		result = getFilersCall(
 				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers/" + FILER_FOR_LOBBYIST_ID,
 				200,
-				false);
+				EXPECT_PASS);
 
 		top = (JSONArray) U.json(result);
 		obj1 = (JSONObject)top.get(0);
@@ -155,7 +158,7 @@ public class FilersTest {
 		result = getFilersCall(
 				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers/" + FILER_FOR_CANDIDATE_ID,
 				200,
-				false);
+				EXPECT_PASS);
 
 		top = (JSONArray) U.json(result);
 		obj1 = (JSONObject)top.get(0);
@@ -168,7 +171,7 @@ public class FilersTest {
 		String result = getFilersCall(
 				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers/" + FILER_FOR_CANDIDATE_ID_ALT + "/top10Contributors?from=2019&to=2020",
 				200,
-				false);
+				EXPECT_PASS);
 
 		JSONObject top = (JSONObject) U.json(result);
 		JSONArray array1 = (JSONArray)top.get("top10Contributors");
@@ -176,15 +179,13 @@ public class FilersTest {
 		Assert.assertEquals("Central Board of Higher Education", obj1.get("committeeName"));
 	}
 
-	//@Test
+	@Test
 	public void testGetFilerTopTenContributorsEmpty() {
 
-		String result = getFilersCall(
+		getFilersCall(
 				"https://cal-access-data-int.us-w1.cloudhub.io/api/filers/" + FILER_FOR_CANDIDATE_ID + "/top10Contributors?from=2019&to=2020",
 				200,
-				false);
-
-		System.out.println("result: " + result);
+				EXPECT_FAIL);
 	}
 
 	public String getFilersCall(String urlStr, int expectedStatus, boolean returnErrorOutput) {
@@ -216,6 +217,8 @@ public class FilersTest {
 		con.setRequestProperty("client_id", p.getProperty("client_id"));
 		con.setRequestProperty("client_secret", p.getProperty("client_secret"));
 		con.setRequestProperty("vendorCode", p.getProperty("vendorCode"));
+
+		boolean verbose = p.getProperty("verbose", "false").equals("true");
 
 		int status = -1;
 		try {
@@ -264,6 +267,11 @@ public class FilersTest {
 		} catch (java.io.IOException e) {
 			;
 			e.printStackTrace();
+		}
+
+		if (verbose) {
+			System.out.println("url:\n" + urlStr);
+			System.out.println("result:\n" + result);
 		}
 
 		return result.toString();
