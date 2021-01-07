@@ -1,4 +1,4 @@
-package org.ganymede.cars;
+package org.ganymede.cars.cal_access_api;
 
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
@@ -12,6 +12,7 @@ import java.util.Scanner;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import org.ganymede.cars.U;
 import org.junit.Assert;
 import org.junit.Test;
 
