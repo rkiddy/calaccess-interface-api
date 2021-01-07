@@ -23,7 +23,14 @@ cada_url_base: TBD
 ```
 These will be added as headers to the requests.
 
+The tests run with Java14. On a Mac, I have this as my default VM.
 
+On Ubuntu 18.04, I run with:
+```
+$ JAVA_HOME=/opt/jdk-14.0.2 ant
+```
+
+Result:
 ```
 % ant     
 Buildfile: /Users/ray/Projects/CalAccessImpls/calaccess-interface-api/build.xml
