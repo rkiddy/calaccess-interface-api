@@ -13,6 +13,7 @@ import java.util.Scanner;
 import javax.net.ssl.HttpsURLConnection;
 
 import org.ganymede.cars.U;
+import org.json.simple.JSONObject;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -21,13 +22,8 @@ public class Form410Test {
 
 	private static String urlBase = null;
 
-	private static String clientId = null;
-	private static String clientSecret = null;
-	private static String vendorCode = null;
-	private static String vendorEmail = null;
-
-	@SuppressWarnings("unused")
-	private static boolean verbose = false;
+	private static final int DATA_IS_STRING = 0;
+	private static final int DATA_IS_FILE = 1;
 
 	@BeforeClass
 	public static void setup() {
@@ -35,203 +31,88 @@ public class Form410Test {
 		Properties p = U.readPropertiesFile(System.getProperty("user.home") + File.separator + ".calaccess_api.txt");
 
 		urlBase = p.getProperty("caa_url_base", U.DEFAULT_CAA_URL_BASE);
-
-		clientId = p.getProperty("client_id");
-		clientSecret = p.getProperty("client_secret");
-		vendorCode = p.getProperty("vendorCode");
-		vendorEmail = p.getProperty("vendorEmail");
-
-		verbose = p.getProperty("verbose", "false").equals("true");
 	}
+
+
+	String data =
+			"<?xml version='1.0' encoding='UTF-8'?>\n"
+			+ "<Form410 xmlns=\"http://cal-access.sos.ca.gov/\">\n"
+			+ "<Header>\n"
+			+ "<CARS_Ver/>\n"
+			+ "<CARS_Form>410</CARS_Form>\n"
+			+ "<Soft_Name>Nefile</Soft_Name>\n"
+			+ "<Soft_Ver>0.01</Soft_Ver>\n"
+			+ "<FilerId>1450006</FilerId>\n"
+			+ "</Header>\n"
+			+ "<Section0>\n"
+			+ "<TypeOfStatement>Amendment</TypeOfStatement>\n"
+			+ "<NotYetQualified>true</NotYetQualified>\n"
+			+ "<DateofTerminationOrQualification>2021-01-01</DateofTerminationOrQualification>"
+			+ "</Section0>\n"
+			+ "<Section1>\n"
+			+ "<IDNumber>1450006</IDNumber>\n"
+			+ "<NameOfCommittee>Godwanaland Enterprises Inc</NameOfCommittee>\n"
+			+ "<AddressOfCommittee.Country>US</AddressOfCommittee.Country>\n"
+			+ "<AddressOfCommittee.AddressLine1>1000 Laurie Ave</AddressOfCommittee.AddressLine1>\n"
+			+ "<AddressOfCommittee.City>San Jose</AddressOfCommittee.City>\n"
+			+ "<AddressOfCommittee.State>CA</AddressOfCommittee.State>\n"
+			+ "<AddressOfCommittee.ZipCode>95125</AddressOfCommittee.ZipCode>\n"
+			+ "<PhoneNumber>408-242-5813</PhoneNumber>\n"
+			+ "<MailingAddressOfCommittee.Country>USA</MailingAddressOfCommittee.Country>\n"
+			+ "<MailingAddressOfCommittee.AddressLine1>1000 Laurie Ave</MailingAddressOfCommittee.AddressLine1>\n"
+			+ "<MailingAddressOfCommittee.City>San Jose</MailingAddressOfCommittee.City>\n"
+			+ "<MailingAddressOfCommittee.State>CA</MailingAddressOfCommittee.State>\n"
+			+ "<MailingAddressOfCommittee.ZipCode>95125</MailingAddressOfCommittee.ZipCode>\n"
+			+ "<EmailAddress>ray@godwanaland.com</EmailAddress>\n"
+			+ "<Fax/>\n"
+			+ "<County>Santa Clara</County>\n"
+			+ "<Jurisdiction>California</Jurisdiction>\n"
+			+ "</Section1>\n"
+			+ "<Section2>\n"
+		    + "<TransactionID>V-001</TransactionID>\n"
+		    + "<CARS_Id>CN000010</CARS_Id>\n"
+	        + "<Name.FirstName>Ray</Name.FirstName>\n"
+	        + "<Name.LastName>Kiddy</Name.LastName>\n"
+	        + "<Address.Country>US</Address.Country>\n"
+	        + "<Address.AddressLine1>1000 Laurie Ave</Address.AddressLine1>\n"
+	        + "<Address.City>San Jose</Address.City>\n"
+	        + "<Address.State>CA</Address.State>\n"
+	        + "<Address.ZipCode>95125</Address.ZipCode>\n"
+	        + "<PhoneNumber>408-242-5813</PhoneNumber>\n"
+	        + "<EmailAddress>ray@ganymede.org</EmailAddress>\n"
+	        + "<Role>Treasurer</Role>\n"
+			+ "</Section2>\n"
+			+ "<Section3>\n"
+	        + "<TransactionID>V-002</TransactionID>\n"
+	        + "<CARS_Id>CN000011</CARS_Id>\n"
+	        + "<ExecutedOn>2020-11-19</ExecutedOn>\n"
+	        + "<NameOfResponsibleOfficer.FirstName>Ray</NameOfResponsibleOfficer.FirstName>\n"
+	        + "<NameOfResponsibleOfficer.MiddleName/>\n"
+	        + "<NameOfResponsibleOfficer.LastName>Kiddy</NameOfResponsibleOfficer.LastName>\n"
+			+ "</Section3>\n"
+			+ "<FinancialInstitution />\n"
+			+ "<Section4-ControlledCommittee />\n"
+			+ "<Section4-PrimarilyFormedCommittee/>\n"
+			+ "<Section4-GeneralPurposeCommittee />\n"
+			+ "<Section4-SponsoredCommittee/>\n"
+			+ "<Section4-SmallContributorCommittee />\n"
+			+ "</Form410>";
+
 
 	@Test
-	public void testNothing() {}
+	public void testForm410WithData00() {
 
-	//@Test
-	public void testGetForm410() {
+		String result = postCall( urlBase + "/filers/1450006/forms?form_type=F410", DATA_IS_STRING, data, U.EXPECT_FAIL);
 
-		String filerID = "1378088";
-
-		System.out.println("filerID: " + filerID);
-
-		URL url = null;
-		try {
-			url = new URL(urlBase + "/filers/" + filerID + "/forms?form_type=F410");
-		} catch (java.net.MalformedURLException e) {
-			e.printStackTrace();
-		}
-
-		HttpsURLConnection con = null;
-		try {
-			con = (HttpsURLConnection) url.openConnection();
-		} catch (java.io.IOException e) {
-			e.printStackTrace();
-		}
-
-		try {
-			con.setRequestMethod("GET");
-		} catch (java.net.ProtocolException e) {
-			e.printStackTrace();
-		}
-
-		con.setRequestProperty("Content-Type", "application/octet-stream");
-
-		if (clientId != null) con.setRequestProperty("client_id", clientId);
-		if (clientSecret != null) con.setRequestProperty("client_secret", clientSecret);
-		if (vendorCode != null) con.setRequestProperty("vendorCode", vendorCode);
-		if (vendorEmail != null) con.setRequestProperty("vendorEmail", vendorEmail);
-
-		int status = -1;
-		try {
-			status = con.getResponseCode();
-		} catch (java.io.IOException e) {
-			e.printStackTrace();
-		}
-
-		try {
-
-			InputStream fis = con.getErrorStream();
-
-			if (fis != null) {
-				System.out.println("error:");
-				try (InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
-						BufferedReader br = new BufferedReader(isr)) {
-					br.lines().forEach(line -> System.out.println(line));
-				}
-			}
-
-		} catch (java.io.IOException e) {
-			;
-			e.printStackTrace();
-		}
-
-		StringBuffer content = null;
-
-		BufferedReader in = null;
-		try {
-			in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-		} catch (java.io.IOException e) {
-			/* do nothing yet */ }
-
-		try {
-			if (in != null) {
-				String inputLine;
-				content = new StringBuffer();
-				while ((inputLine = in.readLine()) != null) {
-					content.append(inputLine);
-				}
-				in.close();
-				con.disconnect(); // System.out.println("content:\n" + content);
-
-				char[] dest = new char[content.length()];
-				try {
-					content.getChars(0, content.length(), dest, 0);
-				} catch (Exception e) {
-					System.out.println(e);
-				}
-				for (int idx = 0, offs = 0; idx < dest.length; idx++, offs++) {
-					System.out.print(" ");
-					String digit = Integer.toHexString((int) (255 & dest[idx]));
-					while (digit.length() < 2) { digit = "0" + digit; }
-					System.out.print(digit);
-					if (offs > 20) {
-						System.out.println("");
-						offs = 0;
-					}
-				}
-				System.out.println("\n");
-			}
-		} catch (java.io.IOException e) {
-			e.printStackTrace();
-		}
-
-		Assert.assertEquals(200, status);
+		JSONObject top = (JSONObject) U.json(result);
+		Assert.assertNotNull(top.get("message"));
 	}
 
-	@SuppressWarnings("unused")
-	private String expectedGetForm410Response = "<?xml version='1.0' encoding='UTF-8'?>\n" + 
-			"<Form410 xmlns=\"http://cal-access.sos.ca.gov/\">\n" + 
-			"  <Header>\n" + 
-			"    <CARS_Ver/>\n" + 
-			"    <CARS_Form>410</CARS_Form>\n" + 
-			"    <Soft_Name/>\n" + 
-			"    <Soft_Ver/>\n" + 
-			"    <FilerId>1378088</FilerId>\n" + 
-			"  </Header>\n" + 
-			"  <Section0>\n" + 
-			"    <TypeOfStatement>Amendment</TypeOfStatement>\n" + 
-			"    <NotYetQualified>true</NotYetQualified>\n" + 
-			"    <DateofTerminationOrQualification>2020-11-16</DateofTerminationOrQualification>\n" + 
-			"  </Section0>\n" + 
-			"  <Section1>\n" + 
-			"    <IDNumber>1378088</IDNumber>\n" + 
-			"    <NameOfCommittee>Committee for Electronic Filing</NameOfCommittee>\n" + 
-			"    <AddressOfCommittee.AddressLine1>1123 K St. NE</AddressOfCommittee.AddressLine1>\n" + 
-			"    <AddressOfCommittee.City>Washington</AddressOfCommittee.City>\n" + 
-			"    <AddressOfCommittee.State>DC</AddressOfCommittee.State>\n" + 
-			"    <AddressOfCommittee.ZipCode>20002</AddressOfCommittee.ZipCode>\n" + 
-			"    <PhoneNumber/>\n" + 
-			"    <MailingAddressOfCommittee.Country/>\n" + 
-			"    <MailingAddressOfCommittee.AddressLine1/>\n" + 
-			"    <MailingAddressOfCommittee.City/>\n" + 
-			"    <MailingAddressOfCommittee.State/>\n" + 
-			"    <MailingAddressOfCommittee.ZipCode/>\n" + 
-			"    <EmailAddress>vincent.c.liang@gmail.com</EmailAddress>\n" + 
-			"    <Fax/>\n" + 
-			"    <County>Los Angeles</County>\n" + 
-			"    <Jurisdiction/>\n" + 
-			"  </Section1>\n" + 
-			"  <Section2>\n" + 
-			"    <TransactionID>A-001</TransactionID>\n" + 
-			"    <CARS_Id>CN000013</CARS_Id>\n" + 
-			"    <Name.FirstName>Samuel</Name.FirstName>\n" + 
-			"    <Name.LastName>Jennings</Name.LastName>\n" + 
-			"    <Address.Country/>\n" + 
-			"    <Address.AddressLine1>1123 K St. NE</Address.AddressLine1>\n" + 
-			"    <Address.City>Washington</Address.City>\n" + 
-			"    <Address.State>DC</Address.State>\n" + 
-			"    <Address.ZipCode>20002</Address.ZipCode>\n" + 
-			"    <PhoneNumber>6023210630</PhoneNumber>\n" + 
-			"    <EmailAddress>samuel.jennings2@yopmail.com</EmailAddress>\n" + 
-			"    <Role>Treasurer;Principal Officer</Role>\n" + 
-			"  </Section2>\n" + 
-			"  <Section3>\n" + 
-			"    <TransactionID>A-001</TransactionID>\n" + 
-			"    <CARS_Id>CN000013</CARS_Id>\n" + 
-			"    <ExecutedOn>2020-11-19</ExecutedOn>\n" + 
-			"    <NameOfResponsibleOfficer.FirstName>Samuel</NameOfResponsibleOfficer.FirstName>\n" + 
-			"    <NameOfResponsibleOfficer.MiddleName/>\n" + 
-			"    <NameOfResponsibleOfficer.LastName>Jennings</NameOfResponsibleOfficer.LastName>\n" + 
-			"  </Section3>\n" + 
-			"  <FinancialInstitution>\n" + 
-			"    <NameOfFinancialInstitution/>\n" + 
-			"    <BankAccountNumber/>\n" + 
-			"    <AddressOfFinancialInstitution.AddressLine1/>\n" + 
-			"    <AddressOfFinancialInstitution.City/>\n" + 
-			"    <AddressOfFinancialInstitution.State/>\n" + 
-			"    <AddressOfFinancialInstitution.ZipCode/>\n" + 
-			"    <FinancialInstitution.PhoneNumber/>\n" + 
-			"  </FinancialInstitution>\n" + 
-			"  <Section4-ControlledCommittee/>\n" + 
-			"  <Section4-PrimarilyFormedCommittee/>\n" + 
-			"  <Section4-GeneralPurposeCommittee>\n" + 
-			"    <Jurisdiction/>\n" + 
-			"    <ActivityDescription/>\n" + 
-			"  </Section4-GeneralPurposeCommittee>\n" + 
-			"  <Section4-SponsoredCommittee/>\n" + 
-			"  <Section4-SmallContributorCommittee>\n" + 
-			"    <DateQualified/>\n" + 
-			"  </Section4-SmallContributorCommittee>\n" + 
-			"</Form410>";
-
-	//@Test
-	public void testPostForm410() {
-
-		String filerID = "0001118";
+	public String postCall(String urlStr, int postDataType, String postData, int expected) {
 
 		URL url = null;
 		try {
-			url = new URL(urlBase + "/filers/" + filerID + "/forms?form_type=F410");
+			url = new URL(urlStr);
 		} catch (java.net.MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -251,24 +132,29 @@ public class Form410Test {
 
 		con.setRequestProperty("Content-Type", "application/xml");
 
-		Properties p = U.readPropertiesFile(System.getProperty("user.home") + File.separator + ".calaccess_api.txt");
-
-		con.setRequestProperty("vendorEmail", p.getProperty("vendorEmail"));
-		con.setRequestProperty("client_id", p.getProperty("client_id"));
-		con.setRequestProperty("client_secret", p.getProperty("client_secret"));
-		con.setRequestProperty("vendorCode", p.getProperty("vendorCode"));
+		if (U.clientId != null) con.setRequestProperty("client_id", U.clientId);
+		if (U.clientSecret != null) con.setRequestProperty("client_secret", U.clientSecret);
+		if (U.vendorCode != null) con.setRequestProperty("vendorCode", U.vendorCode);
+		if (U.vendorEmail != null) con.setRequestProperty("vendorEmail", U.vendorEmail);
 
 		con.setDoOutput(true);
 
 		try {
 			DataOutputStream out = new DataOutputStream(con.getOutputStream());
 
-			Scanner input = new Scanner(new File(U.FORM410_FIXED_MOCK));
-			while (input.hasNextLine()) {
-				String data = input.nextLine();
-				out.writeBytes(data);
+			if (postDataType == DATA_IS_FILE) {
+
+				Scanner input = new Scanner(new File(postData));
+				while (input.hasNextLine()) {
+					String data = input.nextLine();
+					out.writeBytes(data);
+				}
+				input.close();
 			}
-			input.close();
+
+			if (postDataType == DATA_IS_STRING) {
+				out.writeBytes(postData);
+			}
 
 			out.flush();
 			out.close();
@@ -284,58 +170,61 @@ public class Form410Test {
 			e.printStackTrace();
 		}
 
+		if (expected == U.EXPECT_FAIL) {
+			Assert.assertEquals(500, status);
+		}
+
+		if (expected == U.EXPECT_PASS) {
+			Assert.assertEquals(200, status);
+		}
+
+		StringBuilder result = new StringBuilder();
+
 		try {
 
-			StringBuilder error = new StringBuilder();
+			InputStream fis = con.getErrorStream();
 
-			try (InputStream fis = con.getErrorStream();
-					InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
+			if (fis != null) {
+				try (InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
 					BufferedReader br = new BufferedReader(isr)) {
-				br.lines().forEach(line -> error.append(line));
-			}
-
-		} catch (java.io.IOException e) {
-			e.printStackTrace();
-		}
-
-		StringBuffer content = null;
-
-		BufferedReader in = null;
-		try {
-			in = new BufferedReader(new InputStreamReader(con.getInputStream()));
-		} catch (java.io.IOException e) {
-			/* do nothing yet */ }
-
-		try {
-			if (in != null) {
-				String inputLine;
-				content = new StringBuffer();
-				while ((inputLine = in.readLine()) != null) {
-					content.append(inputLine);
+					br.lines().forEach(line -> result.append(line + "\n"));
 				}
-				in.close();
-				con.disconnect();
 			}
+
 		} catch (java.io.IOException e) {
-			e.printStackTrace();
+			System.err.println(e.getStackTrace()[1]);
 		}
 
-		Assert.assertEquals(500, status);
+		if (expected == U.EXPECT_FAIL) {
 
-//		JSONObject response = null;
-//
-//		try {
-//			if (content != null) {
-//				response = (JSONObject) new JSONParser().parse(content.toString());
-//			}
-//		} catch (org.json.simple.parser.ParseException e) {
-//			e.printStackTrace();
-//		}
-//
-//		Assert.assertNotNull(response);
-//
-//		Assert.assertEquals("2020-09-07", response.get("createdDate"));
-//		Assert.assertEquals("Received", response.get("status"));
-//		Assert.assertEquals("CA-0000001", response.get("submissionId"));
+			if (U.verbose) {
+				System.out.println("url:\n" + urlStr);
+				System.out.println("result:\n" + result);
+			}
+
+			return result.toString();
+		}
+
+		try {
+
+			InputStream fis = con.getInputStream();
+
+			if (fis != null) {
+				try (InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
+						BufferedReader br = new BufferedReader(isr)) {
+					br.lines().forEach(line -> result.append(line + "\n"));
+				}
+			}
+
+		} catch (java.io.IOException e) {
+			System.err.println(e.getStackTrace()[1]);
+		}
+
+		if (U.verbose) {
+			System.out.println("url:\n" + urlStr);
+			System.out.println("result:\n" + result);
+		}
+
+		return result.toString();
 	}
 }

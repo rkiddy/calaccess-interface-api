@@ -1,14 +1,9 @@
 package org.ganymede.cars.cal_access_api;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
-
-import javax.net.ssl.HttpsURLConnection;
 
 import org.ganymede.cars.U;
 import org.json.simple.JSONArray;
@@ -19,31 +14,7 @@ import org.junit.Test;
 
 public class FilersTest {
 
-	private static final String FILER_FOR_MEASURE_NAME = "Approve this Ballot Measure";
-	private static final String FILER_FOR_MEASURE_ID = "1378045";
-
-	private static final String FILER_FOR_COMMITTEE_NAME = "AM Test Controlled Committee 6";
-	private static final String FILER_FOR_COMMITTEE_ID = "1378376";
-
-	private static final String FILER_FOR_LOBBYIST_NAME = "Smith C";
-	private static final String FILER_FOR_LOBBYIST_ID = "1378054";
-
-	private static final String FILER_FOR_CANDIDATE_NAME = "Ryan Williams";
-	private static final String FILER_FOR_CANDIDATE_ID = "1378013";
-
-	private static final String FILER_FOR_CANDIDATE_ID_ALT = "1378261";
-
-	private static final int EXPECT_PASS = 0;
-	private static final int EXPECT_FAIL = 1;
-	private static final int EXPECT_EMPTY = 2;
-
 	private static String urlBase = null;
-
-	private static String clientId = null;
-	private static String clientSecret = null;
-	private static String vendorCode = null;
-
-	private static boolean verbose = false;
 
 	@BeforeClass
 	public static void setup() {
@@ -51,29 +22,40 @@ public class FilersTest {
 		Properties p = U.readPropertiesFile(System.getProperty("user.home") + File.separator + ".calaccess_api.txt");
 
 		urlBase = p.getProperty("cada_url_base", U.DEFAULT_CADA_URL_BASE);
+	}
 
-		clientId = p.getProperty("client_id");
-		clientSecret = p.getProperty("client_secret");
-		vendorCode = p.getProperty("vendorCode");
+	List<String> filerIds = null;
 
-		verbose = p.getProperty("verbose", "false").equals("true");
+	@Test
+	public void testGetAllFilers() {
+		Assert.assertNotEquals(allFilerIds().size(), 0);
+	}
+
+	/**
+	 * A "helper" test. Do any of the available filers have whatever it is that is being looked for? Run
+	 * this test with verbose turned on and find out.
+	 */
+	//@Test
+	public void findSomething() {
+
+		for (String filerId : allFilerIds()) {
+			U.getCall(urlBase + "/filers/" + filerId + "/ind-exp-of-committee?from=2019&to=2020", U.EXPECT_ANYTHING);
+			//U.getCall(urlBase + "/contributors?firstName=John&lastName=Smith", 0, U.EXPECT_NOTHING);
+		}
 	}
 
 	@Test
 	public void testGetFilersForMeasures() {
 
-		String result = getFilersCall(
-				urlBase + "/filers?type=measure&from=2019&to=2020",
-				200,
-				EXPECT_PASS);
+		String result = U.getCall(urlBase + "/filers?type=measure&from=2019&to=2020", U.EXPECT_PASS);
 
 		JSONArray top = (JSONArray) U.json(result);
 
 		boolean found = false;
 
 		for (Object obj : top.toArray()) {
-			JSONObject jObj = (JSONObject)obj;
-			if (FILER_FOR_MEASURE_NAME.equals(jObj.get("name")) && FILER_FOR_MEASURE_ID.equals(jObj.get("id"))) {
+			JSONObject jObj = (JSONObject) obj;
+			if ("Approve this Ballot Measure".equals(jObj.get("name")) && "1378045".equals(jObj.get("id"))) {
 				found = true;
 			}
 		}
@@ -84,18 +66,15 @@ public class FilersTest {
 	@Test
 	public void testGetFilersForCommittees() {
 
-		String result = getFilersCall(
-				urlBase + "/filers?type=committee&from=2019&to=2020",
-				200,
-				EXPECT_PASS);
+		String result = U.getCall(urlBase + "/filers?type=committee&from=2019&to=2020", U.EXPECT_PASS);
 
 		JSONArray top = (JSONArray) U.json(result);
 
 		boolean found = false;
 
 		for (Object obj : top.toArray()) {
-			JSONObject jObj = (JSONObject)obj;
-			if (FILER_FOR_COMMITTEE_NAME.equals(jObj.get("name")) && FILER_FOR_COMMITTEE_ID.equals(jObj.get("id"))) {
+			JSONObject jObj = (JSONObject) obj;
+			if ("AM Test Controlled Committee 6".equals(jObj.get("name")) && "1378376".equals(jObj.get("id"))) {
 				found = true;
 			}
 		}
@@ -106,18 +85,15 @@ public class FilersTest {
 	@Test
 	public void testGetFilersForLobbyists() {
 
-		String result = getFilersCall(
-				urlBase + "/filers?type=lobbyist&from=2019&to=2020",
-				200,
-				EXPECT_PASS);
+		String result = U.getCall(urlBase + "/filers?type=lobbyist&from=2019&to=2020", U.EXPECT_PASS);
 
 		JSONArray top = (JSONArray) U.json(result);
 
 		boolean found = false;
 
 		for (Object obj : top.toArray()) {
-			JSONObject jObj = (JSONObject)obj;
-			if (FILER_FOR_LOBBYIST_NAME.equals(jObj.get("name")) && FILER_FOR_LOBBYIST_ID.equals(jObj.get("id"))) {
+			JSONObject jObj = (JSONObject) obj;
+			if ("Smith C".equals(jObj.get("name")) && "1378054".equals(jObj.get("id"))) {
 				found = true;
 			}
 		}
@@ -128,18 +104,15 @@ public class FilersTest {
 	@Test
 	public void testGetFilersForCandidates() {
 
-		String result = getFilersCall(
-				urlBase + "/filers?type=candidate&from=2019&to=2020",
-				200,
-				EXPECT_PASS);
+		String result = U.getCall(urlBase + "/filers?type=candidate&from=2019&to=2020", U.EXPECT_PASS);
 
 		JSONArray top = (JSONArray) U.json(result);
 
 		boolean found = false;
 
 		for (Object obj : top.toArray()) {
-			JSONObject jObj = (JSONObject)obj;
-			if (FILER_FOR_CANDIDATE_NAME.equals(jObj.get("name")) && FILER_FOR_CANDIDATE_ID.equals(jObj.get("id"))) {
+			JSONObject jObj = (JSONObject) obj;
+			if ("Ryan Williams".equals(jObj.get("name")) && "1378013".equals(jObj.get("id"))) {
 				found = true;
 			}
 		}
@@ -147,55 +120,48 @@ public class FilersTest {
 		Assert.assertTrue(found);
 	}
 
+	/**
+	 * Fetches one of each of the filer types. Verifies a field in the resulting
+	 * data.
+	 *
+	 * TODO This relies on current data and will break if the SoS changes anything.
+	 */
 	@Test
 	public void testGetFilerProfile() {
 
-		String result = getFilersCall(
-				urlBase + "/filers/" + FILER_FOR_MEASURE_ID,
-				200,
-				EXPECT_PASS);
+		String result = U.getCall(urlBase + "/filers/1378045", U.EXPECT_PASS);
 
 		JSONArray top = (JSONArray) U.json(result);
-		JSONObject obj1 = (JSONObject)top.get(0);
-		JSONObject obj2 = (JSONObject)obj1.get("billingAddress");
+		JSONObject obj1 = (JSONObject) top.get(0);
+		JSONObject obj2 = (JSONObject) obj1.get("billingAddress");
 		Assert.assertEquals("444 Ballot St.", obj2.get("street"));
 
-		result = getFilersCall(
-				urlBase + "/filers/" + FILER_FOR_COMMITTEE_ID,
-				200,
-				EXPECT_PASS);
+		result = U.getCall(urlBase + "/filers/1378376", U.EXPECT_PASS);
 
 		top = (JSONArray) U.json(result);
-		obj1 = (JSONObject)top.get(0);
+		obj1 = (JSONObject) top.get(0);
 		Assert.assertEquals("AM Test Controlled Committee 6", obj1.get("name"));
 
-		result = getFilersCall(
-				urlBase + "/filers/" + FILER_FOR_LOBBYIST_ID,
-				200,
-				EXPECT_PASS);
+		result = U.getCall(urlBase + "/filers/1378054", U.EXPECT_PASS);
 
 		top = (JSONArray) U.json(result);
-		obj1 = (JSONObject)top.get(0);
-		obj2 = (JSONObject)obj1.get("contactInformation");
+		obj1 = (JSONObject) top.get(0);
+		obj2 = (JSONObject) obj1.get("contactInformation");
 		Assert.assertEquals("idasmith@yopmail.com", obj2.get("email"));
 
-		result = getFilersCall(
-				urlBase + "/filers/" + FILER_FOR_CANDIDATE_ID,
-				200,
-				EXPECT_PASS);
+		result = U.getCall(urlBase + "/filers/1378013", U.EXPECT_PASS);
 
 		top = (JSONArray) U.json(result);
-		obj1 = (JSONObject)top.get(0);
+		obj1 = (JSONObject) top.get(0);
 		Assert.assertEquals("Ryan Williams", obj1.get("name"));
 	}
 
 	@Test
 	public void testGetFilerTopTenContributors() {
 
-		String result = getFilersCall(
-				urlBase + "/filers/" + FILER_FOR_CANDIDATE_ID_ALT + "/top10Contributors?from=2019&to=2020",
-				200,
-				EXPECT_PASS);
+		String result = U.getCall(
+				urlBase + "/filers/1378261/top10Contributors?from=2019&to=2020",
+				U.EXPECT_PASS);
 
 		JSONObject top = (JSONObject) U.json(result);
 		JSONArray array1 = (JSONArray)top.get("top10Contributors");
@@ -206,129 +172,171 @@ public class FilersTest {
 	@Test
 	public void testGetFilerTopTenContributorsEmpty() {
 
-		String result = getFilersCall(
-				urlBase + "/filers/" + FILER_FOR_CANDIDATE_ID + "/top10Contributors?from=2019&to=2020",
-				200,
-				EXPECT_EMPTY);
+		String result = U.getCall(
+				urlBase + "/filers/1378013/top10Contributors?from=2019&to=2020",
+				U.EXPECT_EMPTY);
+
+		Assert.assertTrue(result.contains("No records found"));
+	}
+
+	// @Test - get "Resource not found". Why?
+	public void testGetFilerLateContributorsEmpty() {
+
+		String result = U.getCall(urlBase + "/filers/1378069/lateContributors?from=2018&to=2020",
+				U.EXPECT_EMPTY);
 
 		Assert.assertTrue(result.contains("No records found"));
 	}
 
 	@Test
-	public void testGetFilerLobbyistEmptoyers() {
+	public void testGetFilerLobbyistEmptoyersEmpty() {
 
-		String result = getFilersCall(
-				urlBase + "/filers/1378380/lobbying-employers?from=2018&to=2020",
-				200,
-				EXPECT_EMPTY);
+		String result = U.getCall(urlBase + "/filers/1378112/lobbying-employers?from=2018&to=2020",
+				U.EXPECT_EMPTY);
+
+		Assert.assertTrue(result.contains("No records found"));
+	}
+
+
+	public void testGetFilerSpendersEmpty() {
+
+		String result = U.getCall(urlBase + "/filers/1378387/spenders?from=2019&to=2020", U.EXPECT_EMPTY);
 
 		Assert.assertTrue(result.contains("No records found"));
 	}
 
 	@Test
-	public void testGetFilerContributorPayees() {
+	public void testGetFilerContributorPayeesEmpty() {
 
-		String result = getFilersCall(
-				urlBase + "/filers/1378380/contributors-payees?from=2018&to=2020",
-				200,
-				EXPECT_EMPTY);
+		String result = U.getCall(urlBase + "/filers/1378314/contributors-payees?from=2018&to=2020", U.EXPECT_EMPTY);
 
 		Assert.assertTrue(result.contains("No records found"));
 	}
 
-	//@Test - returns an error. Email sent, because the error looks weird.
-	public void testGetFilerSpenders() {
+	@Test
+	public void testGetFilerTargetsEmpty() {
 
-		getFilersCall(
-				urlBase + "/filers/1378313/spenders",
-				200,
-				EXPECT_FAIL);
+		String result = U.getCall(urlBase + "/filers/1378241/targets?from=2018&to=2020", U.EXPECT_EMPTY);
+
+		Assert.assertTrue(result.contains("No records found"));
 	}
 
-	public String getFilersCall(String urlStr, int expectedStatus, int expected) {
+	@Test
+	public void testGetContributorsEmpty() {
 
-		URL url = null;
-		try {
-			url = new URL(urlStr);
-		} catch (java.net.MalformedURLException e) {
-			e.printStackTrace();
-		}
+		String result = U.getCall(urlBase + "/contributors?firstName=John&lastName=Smith", U.EXPECT_EMPTY);
 
-		HttpsURLConnection con = null;
-		try {
-			con = (HttpsURLConnection) url.openConnection();
-		} catch (java.io.IOException e) {
-			e.printStackTrace();
-		}
+		Assert.assertTrue(result.contains("unknown description"));
+	}
 
-		try {
-			con.setRequestMethod("GET");
-		} catch (java.net.ProtocolException e) {
-			e.printStackTrace();
-		}
+	@Test
+	public void testGetFilerCandidatesOfCommittee() {
 
-		con.setRequestProperty("Content-Type", "application/json");
+		String result = U.getCall(urlBase + "/filers/1378081/candidates-of-committee", U.EXPECT_PASS);
 
-		if (clientId != null) con.setRequestProperty("client_id", clientId);
-		if (clientSecret != null) con.setRequestProperty("client_secret", clientSecret);
-		if (vendorCode != null) con.setRequestProperty("vendorCode", vendorCode);
+		JSONObject top = (JSONObject) U.json(result);
+		Assert.assertEquals("Central Board of Higher Education", top.get("committeeName"));
+	}
 
-		int status = -1;
-		try {
-			status = con.getResponseCode();
-		} catch (java.io.IOException e) {
-			System.err.println(e.getStackTrace()[1]);
-		}
+	@Test
+	public void testGetFilerIndExps() {
 
-		if (expected == EXPECT_PASS) {
-			Assert.assertEquals(expectedStatus, status);
-		}
+		String result = U.getCall(urlBase + "/filers/1378087/ind-exp-of-committee?from=2019&to=2020", U.EXPECT_PASS);
 
-		StringBuilder result = new StringBuilder();
+		boolean found = false;
 
-		try {
+		JSONArray top = (JSONArray) U.json(result);
 
-			InputStream fis = con.getErrorStream();
-
-			if (fis != null) {
-				try (InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
-						BufferedReader br = new BufferedReader(isr)) {
-					if (expected != EXPECT_PASS) {
-						br.lines().forEach(line -> result.append(line + "\n"));
-					}
-				}
-			}
-
-		} catch (java.io.IOException e) {
-			if (expected == EXPECT_PASS) {
-				System.err.println(e.getStackTrace()[1]);
+		for (Object obj : top.toArray()) {
+			JSONObject jObj = (JSONObject) obj;
+			if ("Candidate John F Smith".equals(jObj.get("targetName")) && "1378086".equals(jObj.get("targetId"))) {
+				found = true;
 			}
 		}
 
-		try {
+		Assert.assertTrue(found);
+	}
 
-			InputStream fis = con.getInputStream();
+	@Test
+	public void testGetFilerFirmAndEmployerLobbyist() {
 
-			if (fis != null) {
-				try (InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
-						BufferedReader br = new BufferedReader(isr)) {
-					if (expected != EXPECT_FAIL) {
-						br.lines().forEach(line -> result.append(line + "\n"));
-					}
-				}
-			}
+		String result = U.getCall(urlBase + "/filers/1378032/firm-and-employer-of-lobbyist", U.EXPECT_PASS);
 
-		} catch (java.io.IOException e) {
-			if (expected == EXPECT_PASS) {
-				System.err.println(e.getStackTrace()[1]);
+		JSONObject top = (JSONObject) U.json(result);
+
+		Assert.assertEquals("1378032", top.get("lobbyistId"));
+
+		boolean found = false;
+
+		
+		for (Object obj : ((JSONArray)top.get("lobbyingFirm")).toArray()) {
+			JSONObject jObj = (JSONObject) obj;
+			if ("Capital Partners Lobby Firm".equals(jObj.get("name"))) {
+				found = true;
 			}
 		}
 
-		if (verbose) {
-			System.out.println("url:\n" + urlStr);
-			System.out.println("result:\n" + result);
+		Assert.assertTrue(found);
+
+		found = false;
+
+		for (Object obj : ((JSONArray)top.get("lobbyingEmployer")).toArray()) {
+			JSONObject jObj = (JSONObject) obj;
+			if ("Vehement Lobbyist Employer".equals(jObj.get("name"))) {
+				found = true;
+			}
 		}
 
-		return result.toString();
+		Assert.assertTrue(found);
+	}
+
+	/**
+	 *  @see https://github.com/rkiddy/calaccess-interface-api/issues/1
+	 */
+	//@Test
+	public void testGetFilerSpendersWithMuleException() {
+
+		String result = U.getCall(urlBase + "/filers/1378313/spenders", U.EXPECT_EMPTY);
+
+		Assert.assertTrue(result.contains("No records found"));
+	}
+
+
+	public List<String> allFilerIds() {
+
+		if (filerIds == null) {
+
+			filerIds = new ArrayList<>();
+
+			String result = U.getCall(urlBase + "/filers?type=measure&from=2019&to=2020", U.EXPECT_PASS);
+
+			JSONArray top = (JSONArray) U.json(result);
+			for (Object obj : top.toArray()) {
+				filerIds.add(((JSONObject) obj).get("id").toString());
+			}
+
+			result = U.getCall(urlBase + "/filers?type=committee&from=2019&to=2020", U.EXPECT_PASS);
+
+			top = (JSONArray) U.json(result);
+			for (Object obj : top.toArray()) {
+				filerIds.add(((JSONObject) obj).get("id").toString());
+			}
+
+			result = U.getCall(urlBase + "/filers?type=lobbyist&from=2019&to=2020", U.EXPECT_PASS);
+
+			top = (JSONArray) U.json(result);
+			for (Object obj : top.toArray()) {
+				filerIds.add(((JSONObject) obj).get("id").toString());
+			}
+
+			result = U.getCall(urlBase + "/filers?type=candidate&from=2019&to=2020", U.EXPECT_PASS);
+
+			top = (JSONArray) U.json(result);
+			for (Object obj : top.toArray()) {
+				filerIds.add(((JSONObject) obj).get("id").toString());
+			}
+		}
+
+		return filerIds;
 	}
 }
