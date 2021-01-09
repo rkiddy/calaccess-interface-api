@@ -1,9 +1,21 @@
 
-calaccess-interface-api
 Accessing the updated Cal-Access implementation.
 
 The new Cal-Access system is due to become live in February of 2021. This project contains
 tests to confirm the accessibility and correctness of the API.
+
+TBD: Still trying to figure out the best way to package the submission data so that
+different people can use these tests for the Cal-Access-API. Entities cannot be
+created via the API. The API calls that are, at this point, allowed will let you update
+an already-created entity. This means that tests are dependant on data created outside
+of the testing system. So there needs to be a way for a user to supply the data for the
+entities that are authorized for their use.
+
+This problem does not apply to the Cal-Access-Data-API, since everyone has the same access
+to that data and it is read-only. But the environment is also less complete, so less is
+testable.
+
+[2021-01-08 -rrk]
 
 ## Running ##
 
